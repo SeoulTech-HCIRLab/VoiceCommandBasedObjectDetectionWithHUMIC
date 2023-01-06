@@ -1,5 +1,13 @@
 # VoiceCommandBasedObjectDetectionWithHUMIC
 
+## Environment
+#### 1. YOLOv3 ROS in ROS workspace
+- install at: https://github.com/leggedrobotics/darknet_ros
+#### 2. Kinect V2 bridge in ROS workspace
+- install at: https://github.com/code-iai/iai_kinect2
+#### 3. Kangaroo Library in Arduino libraries
+- install at: https://www.dimensionengineering.com/info/arduino
+
 ## start system
 #### terminal1: start ros
 ```
