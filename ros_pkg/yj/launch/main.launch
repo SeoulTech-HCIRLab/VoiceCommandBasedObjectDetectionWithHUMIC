@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<launch>
+	<node pkg="yj" type="show_img.py" name="show_img" output="screen"/>
+	<node pkg="yj" type="pub_cmd.py" name="pub_cmd" output="screen"/>
+</launch>

@@ -1,0 +1,126 @@
+#!/usr/bin/env python3
+
+import rospy
+import cv2
+import numpy as np
+import math
+import serial
+
+from std_msgs.msg import String
+from sensor_msgs.msg import Image
+from darknet_ros_msgs.msg import BoundingBoxes
+
+from yj.msg import Target
+from config import Config as cf
+
+class show:
+    def __init__(self):
+
+        self.depth = None
+        self.boxes = None
+        
+        self.targets = []
+
+        self.coord_pub = rospy.Publisher("/target/xyxy_depth", Target, queue_size=10)
+
+        self.depth_sub = rospy.Subscriber("/kinect2/hd/image_depth_rect", Image, self.set_depth)
+        self.obj_sub = rospy.Subscriber("/darknet_ros/bounding_boxes", BoundingBoxes, self.set_obj)
+        self.target_sub = rospy.Subscriber("/cmd", String, self.set_target)
+
+        self.image_sub = rospy.Subscriber("/kinect2/hd/image_color", Image, self.set_img)
+
+    def set_depth(self, data):
+        dep_img = np.fromstring(data.data, dtype=np.uint16)
+        dep_img = dep_img.reshape(data.height, data.width)
+
+        self.depth = dep_img
+
+    def set_obj(self, data):
+        self.boxes = data.bounding_boxes
+
+    def set_target(self, data):
+        self.targets = data.data;
+
+    def set_img(self, data):
+
+        img = np.fromstring(data.data, dtype=np.uint8)
+        img = img.reshape(data.height, data.width, -1)
+
+        target_coord = Target()
+
+        target_coord.target = False
+        target_coord.start_flag = False
+        
+        if 'start' in self.targets:
+            target_coord.start_flag = True
+
+        for box in self.boxes:
+            if box.probability > cf.box_prob_th and box.Class != 'chair':
+
+                x1 = box.xmin
+                y1 = box.ymin
+                x2 = box.xmax
+                y2 = box.ymax
+                bw = x2-x1
+                bh = y2-y1
+                xc = int(x1+bw/2)
+                yc = int(y1+bh/2)
+                depth = int(self.depth[yc, xc])
+
+                label = box.Class
+                coord = f'({xc}, {yc}, {depth})'
+                text = f'{label} - {coord}'
+
+                direc = 0
+
+                if label in self.targets:
+                    color = (0, 0, 255)
+
+                    if xc-960 < 0:
+                        direc = 1
+                    elif xc-960 > 0:
+                        direc = -1
+
+                    """
+                    tana = 540
+                    tanb = 540/(xc-480)
+                    tan0 = (tanb-tana) / (1+tanb*tana)
+                    """
+                    tan0 = (xc-960)/1066
+                    
+                    rad = math.atan(tan0)
+                    deg = abs(int((rad*180)/math.pi))
+
+                    #deg = int(abs((xc*35/480)-35))
+
+                    target_coord.target = True
+                    target_coord.degree = deg
+                    target_coord.direction = direc
+                    target_coord.depth = depth
+                    target_coord.xc = xc
+                    target_coord.yc = yc
+                    #self.coord_pub.publish(target_coord)
+
+                else:
+                    color = (255, 0, 0)
+
+                cv2.rectangle(img, (x1, y1), (x2, y2), color, 3)
+                cv2.putText(img, text, (x1, y1), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2)
+
+        self.coord_pub.publish(target_coord)
+        cv2.rectangle(img, (800, 3), (1120, 1073), (0, 255, 0), 3)
+
+        cv2.imshow("output", img)
+        cv2.waitKey(3)
+
+if __name__=='__main__':
+    rospy.init_node('show_img', anonymous=False)
+    show()
+
+    try:
+        rospy.spin()
+    except KeyboardInterrupt:
+        rospy.loginfo("shutting down")
+
+    cv2.destroyAllWindows()
+
