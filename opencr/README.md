@@ -1,7 +1,7 @@
 # Prepare for OpenCR
 
 #### upload position_mode.ino to OpenCR
-- Jetson Xavier에서는 개발/컴파일이 불가능하여, HUMIC의 앞판을 열고 다른 PC와 연결해 업로드함.
+- Jetson Xavier에서는 개발/컴파일이 불가능하여, HUMIC의 앞판을 열고 안에있는 opencr과 임베디드 운영체제가 아닌 환경의 PC와 연결해 업로드함.
 - 업로드 이후 Jetson Xavier와 OpenCR 연결
 
 
