@@ -1,5 +1,21 @@
 # VoiceCommandBasedObjectDetectionWithHUMIC
 
+## github structure
+```bash
+├── Arduino
+│   ├── Rot 
+│   ├── USensor  
+│   ├── librareis/yj  
+│   └── README.md  
+├── opencr 
+│   ├── README.md 
+│   └── position_mode.ino  
+├── ros_pkg
+│   ├── yj  
+│   └── README.md
+└── README.md
+``` 
+
 ## start system
 #### terminal1: start ros
 ```
