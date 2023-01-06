@@ -1,9 +1,12 @@
 # Prepare for Arduino
 
-#### 1. move "/yj" directory in "/libraries" to under " ~/Arduino/libraries/ros_lib/ " directory
+#### 1. install Kangaroo Library
+- install at: https://www.dimensionengineering.com/info/arduino
+
+#### 2. move "/yj" directory in "/libraries" to under " ~/Arduino/libraries/ros_lib/ " directory
 - reference at: http://wiki.ros.org/rosserial_arduino/Tutorials/Adding%20Custom%20Messages
   
-#### 2. upload Arduino
+#### 3. upload Arduino
 - upload each sketch to each Arduino  
   - reference at: HCIR NAS > HCIR > 5_Project > !RobotSystem > 로봇제작용역 > 납품결과 > 2019-01-30 최종 전달 파일 > 5. 설명서 > 2019-01-29 Mobile Robot 설명서.pptx  
   
